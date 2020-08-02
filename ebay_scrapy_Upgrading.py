@@ -101,6 +101,27 @@ def analyzing(df):
             plt.title('Sales Day Length (days)')
             df['Sales Day Length'].hist(bins=30)
             plt.show()
+
+            # df['intercept']=1
+            # Consider not making Fitting Line of Category. The value is active to make the dummies.
+            # And relationship also doens't make sence
+            # lm=sm.OLS(df['Price'], df[['intercept', 'Category']])
+            # results=lm.fit()
+            # results.summary();
+            # lm=sm.OLS(df['Price'], df[['intercept', 'ShippingCost']])
+            # results=lm.fit()
+            # results.summary();
+            # lm=sm.Logit(df['Price'], df[['intercept', 'Sales Day Length']])
+            # results=lm.fit()
+            # results.summary()
+            # Make a new Fitting Line with StartTime in a new way. Cuz it's datetime type. 
+            # Or, we don't need it. Cuz we already have the grapth.
+            # lm=sm.OLS(df['ShippingCost'], df[['intercept', 'Sales Day Length']])
+            # results=lm.fit()
+            # results.summary();            
+            # lm=sm.OLS(df['Price'], df[['intercept', 'ShippingCost', 'Sales Day Length']])
+            # results=lm.fit()
+            # results.summary();
             
             break
 
@@ -111,7 +132,36 @@ def analyzing(df):
             print("\nInvalid Answer. Please type yes or no.")
             continue
 
-        
+# def get_related_items(cat_id, YOURAPPID):
+#     question = input("\nWould you like to explore more information with the previous keyword?: [yes/no]").lower()   
+#     if question == "yes":
+#         # After typing the Keyword, extract the number of entries
+#         # We need the "Title", "Start_date", "Price"
+#         # cat_id = ""
+#         url = ('http://svcs.ebay.com/MerchandisingService\
+#         ?OPERATION-NAME=getMostWatchedItems\
+#         &SERVICE-NAME=MerchandisingService\
+#         &SERVICE-VERSION=1.1.0\
+#         &CONSUMER-ID=' + YOURAPPID +
+#             '&RESPONSE-DATA-FORMAT=XML\
+#         &REST-PAYLOAD\
+#         &maxResults=50\
+#         &categoryId=' + cat_id)
+#         url = url.replace(" ", "%20")
+#         api_result = requests.get(url)
+#         parsed_doc = api_result.text
+#         # print(parsed_doc)
+
+#         print('--------------------------------------')
+#         # print("views: " +
+#         #       parsed_doc['getMostWatchedItemsResponse'][0]['itemRecommendations'][0]['item'][0])
+#         break
+
+#     elif question == "no":
+#         return
+#     else:
+#         print("\nInvalid Answer. Please type yes or no.")
+#         continue
 
 def restart():
     while True:
@@ -130,6 +180,7 @@ def main():
         YOURAPPID = my_appid()
         cat_id, df = get_keywords(YOURAPPID)
         analyzing(df)
+        # get_related_items(cat_id, YOURAPPID)
         restart()
         break
 
