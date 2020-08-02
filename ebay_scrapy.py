@@ -111,7 +111,73 @@ def analyzing(df):
             print("\nInvalid Answer. Please type yes or no.")
             continue
 
-        
+def get_related_items(YOURAPPID, cat_id):
+    while True:
+        question = input("\nWould you like the recommendations of related products?: [yes/no]").lower()   
+        if question == "yes":
+            url = ('http://svcs.ebay.com/MerchandisingService?OPERATION-NAME=getMostWatchedItems&SERVICE-NAME=MerchandisingService&SERVICE-VERSION=1.1.0&CONSUMER-ID=' + YOURAPPID +'&RESPONSE-DATA-FORMAT=XML&REST-PAYLOAD&maxResults=20&categoryId=' + cat_id)
+            url = url.replace(" ", "%20")
+            api_result = requests.get(url)
+            parsed_doc = BeautifulSoup(api_result.content, 'lxml')
+            items = parsed_doc.find_all('item')
+            print('----------------------------------------------------------------------------')
+            data=[]
+            for item in items:
+                item_info=[]
+                title = item.title.string.strip()
+                cat = item.primarycategoryname.string.lower()
+                price = int(round(float(item.buyitnowprice.string)))
+                shippingcost = int(float(item.shippingcost.string))
+                itemurl = item.viewitemurl.string
+                watchcount = item.watchcount.string
+                
+                item_info.extend((title,cat,price,shippingcost,itemurl,watchcount))
+                data.append(item_info)
+            
+            df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Url', 'WatchCount'])
+            print(df)
+            break
+
+        elif question == "no":
+            return
+
+        else:
+            print("\nInvalid Answer. Please type yes or no.")
+            continue
+
+def get_related_items(YOURAPPID, cat_id):
+    while True:
+        question = input("\nWould you like the recommendations of related products?: [yes/no]").lower()   
+        if question == "yes":
+            url = ('http://svcs.ebay.com/MerchandisingService?OPERATION-NAME=getMostWatchedItems&SERVICE-NAME=MerchandisingService&SERVICE-VERSION=1.1.0&CONSUMER-ID=' + YOURAPPID +'&RESPONSE-DATA-FORMAT=XML&REST-PAYLOAD&maxResults=20&categoryId=' + cat_id)
+            url = url.replace(" ", "%20")
+            api_result = requests.get(url)
+            parsed_doc = BeautifulSoup(api_result.content, 'lxml')
+            items = parsed_doc.find_all('item')
+            print('----------------------------------------------------------------------------')
+            data=[]
+            for item in items:
+                item_info=[]
+                title = item.title.string.strip()
+                cat = item.primarycategoryname.string.lower()
+                price = int(round(float(item.buyitnowprice.string)))
+                shippingcost = int(float(item.shippingcost.string))
+                itemurl = item.viewitemurl.string
+                watchcount = item.watchcount.string
+                
+                item_info.extend((title,cat,price,shippingcost,itemurl,watchcount))
+                data.append(item_info)
+            
+            df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Url', 'WatchCount'])
+            print(df)
+            break
+
+        elif question == "no":
+            return
+
+        else:
+            print("\nInvalid Answer. Please type yes or no.")
+            continue
 
 def restart():
     while True:
@@ -124,12 +190,12 @@ def restart():
             print("\nInvalid Answer. Please type yes or no.")
             continue
 
-
 def main():
     while True:
         YOURAPPID = my_appid()
         cat_id, df = get_keywords(YOURAPPID)
         analyzing(df)
+        get_related_items(YOURAPPID, cat_id)
         restart()
         break
 

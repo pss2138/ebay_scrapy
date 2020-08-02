@@ -35,6 +35,7 @@ def get_keywords(YOURAPPID):
         cat_id = item.categoryid.string.lower()
         price = int(round(float(item.currentprice.string)))
         shippingcost = item.shippingservicecost
+        ###Change it to int(float(shippingcost))
         starttime = item.starttime.string
         endtime = item.endtime.string
 
@@ -54,6 +55,7 @@ def get_keywords(YOURAPPID):
     print('----------------------------------------------------------------------------')
     print("Shipping Cost Distribution: \nCost($)   Top 100 Amounts")
     print(df['ShippingCost'].value_counts())
+    ###Align the Cost values by sorted
     print('----------------------------------------------------------------------------')
     df['Sales Day Length'] = (df['Endtime'] - df['Starttime']).dt.days
 
@@ -87,6 +89,7 @@ def analyzing(df):
             cat_pie.plot(kind='pie', cmap=plt.cm.Pastel1, autopct='%.1f%%', labels=None)
             plt.legend(labels=cat_pie.index, loc="upper right", bbox_to_anchor=(1,1))
             plt.ylabel('')
+            ###Locate the legend unoverlappedly out of the graphic.
 
             plt.subplot(2,2,2)
             plt.title('Price Distribution ($)')
@@ -96,11 +99,14 @@ def analyzing(df):
             plt.title('Start Time Distribution')
             df['Starttime'].hist(bins=30, color='lightgreen')
             plt.xticks(rotation=30)
+            ###Add the line plot with plt.legend
 
             plt.subplot(2,2,4)
             plt.title('Sales Day Length (days)')
             df['Sales Day Length'].hist(bins=30)
             plt.show()
+
+            ###Add the graphics with shipping cost
 
             # df['intercept']=1
             # Consider not making Fitting Line of Category. The value is active to make the dummies.
@@ -132,36 +138,40 @@ def analyzing(df):
             print("\nInvalid Answer. Please type yes or no.")
             continue
 
-# def get_related_items(cat_id, YOURAPPID):
-#     question = input("\nWould you like to explore more information with the previous keyword?: [yes/no]").lower()   
-#     if question == "yes":
-#         # After typing the Keyword, extract the number of entries
-#         # We need the "Title", "Start_date", "Price"
-#         # cat_id = ""
-#         url = ('http://svcs.ebay.com/MerchandisingService\
-#         ?OPERATION-NAME=getMostWatchedItems\
-#         &SERVICE-NAME=MerchandisingService\
-#         &SERVICE-VERSION=1.1.0\
-#         &CONSUMER-ID=' + YOURAPPID +
-#             '&RESPONSE-DATA-FORMAT=XML\
-#         &REST-PAYLOAD\
-#         &maxResults=50\
-#         &categoryId=' + cat_id)
-#         url = url.replace(" ", "%20")
-#         api_result = requests.get(url)
-#         parsed_doc = api_result.text
-#         # print(parsed_doc)
+def get_related_items(YOURAPPID, cat_id):
+    while True:
+        question = input("\nWould you like the recommendations of related products?: [yes/no]").lower()   
+        if question == "yes":
+            url = ('http://svcs.ebay.com/MerchandisingService?OPERATION-NAME=getMostWatchedItems&SERVICE-NAME=MerchandisingService&SERVICE-VERSION=1.1.0&CONSUMER-ID=' + YOURAPPID +'&RESPONSE-DATA-FORMAT=XML&REST-PAYLOAD&maxResults=20&categoryId=' + cat_id)
+            url = url.replace(" ", "%20")
+            api_result = requests.get(url)
+            parsed_doc = BeautifulSoup(api_result.content, 'lxml')
+            items = parsed_doc.find_all('item')
+            print('----------------------------------------------------------------------------')
+            data=[]
+            for item in items:
+                item_info=[]
+                title = item.title.string.strip()
+                cat = item.primarycategoryname.string.lower()
+                price = int(round(float(item.buyitnowprice.string)))
+                shippingcost = int(float(item.shippingcost.string))
+                itemurl = item.viewitemurl.string
+                watchcount = item.watchcount.string
+                
+                item_info.extend((title,cat,price,shippingcost,itemurl,watchcount))
+                data.append(item_info)
+            
+            df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Url', 'WatchCount'])
+            print(df)
+            ###Show them what we can explore more with this raw data frame.
+            break
 
-#         print('--------------------------------------')
-#         # print("views: " +
-#         #       parsed_doc['getMostWatchedItemsResponse'][0]['itemRecommendations'][0]['item'][0])
-#         break
+        elif question == "no":
+            return
 
-#     elif question == "no":
-#         return
-#     else:
-#         print("\nInvalid Answer. Please type yes or no.")
-#         continue
+        else:
+            print("\nInvalid Answer. Please type yes or no.")
+            continue
 
 def restart():
     while True:
@@ -180,7 +190,7 @@ def main():
         YOURAPPID = my_appid()
         cat_id, df = get_keywords(YOURAPPID)
         analyzing(df)
-        # get_related_items(cat_id, YOURAPPID)
+        get_related_items(YOURAPPID, cat_id)
         restart()
         break
 
