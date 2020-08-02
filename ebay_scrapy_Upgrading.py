@@ -107,6 +107,7 @@ def analyzing(df):
             plt.show()
 
             ###Add the graphics with shipping cost
+            ###Catch up the "Category" variables by np.unique or value_counts and analyze.
 
             # df['intercept']=1
             # Consider not making Fitting Line of Category. The value is active to make the dummies.
