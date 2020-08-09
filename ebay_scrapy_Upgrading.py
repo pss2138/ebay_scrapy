@@ -35,7 +35,11 @@ def get_keywords(YOURAPPID):
         cat_id = item.categoryid.string.lower()
         price = int(round(float(item.currentprice.string)))
         shippingcost = item.shippingservicecost
-        ###Change it to int(float(shippingcost))
+        if shippingcost is not None:
+            int(float(shippingcost.string))
+        ###Change it to int(float(shippingcost.string))
+        # Use .string for not-None tags to read the values, change the dtypes to integer,
+        # and use fillna at the dataframe part and make the 0 index to int
         starttime = item.starttime.string
         endtime = item.endtime.string
 
@@ -45,6 +49,11 @@ def get_keywords(YOURAPPID):
     df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Starttime', 'Endtime'])
     df['Starttime'] = df['Starttime'].apply(pd.to_datetime).dt.normalize()
     df['Endtime'] = df['Endtime'].apply(pd.to_datetime).dt.normalize()
+    df['ShippingCost'].fillna(0, inplace=True)
+    df['ShippingCost'] = df['ShippingCost'].astype(int)
+    # the values are still 'Tag' format, but the dtype is object. replace() also didn't work.
+    print(df['ShippingCost'].dtypes)
+    print(df['ShippingCost'].value_counts)
 
     print('-<start>--------------------------------------------------------------------')
     print("Keyword: " + Keywords)
