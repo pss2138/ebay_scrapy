@@ -37,11 +37,12 @@ def get_keywords(YOURAPPID):
         shippingcost = item.shippingservicecost
         starttime = item.starttime.string
         endtime = item.endtime.string
+        url = item.viewitemurl.string
 
-        item_info.extend((name,cat,price,shippingcost,starttime,endtime))
+        item_info.extend((name, cat, price, shippingcost, starttime, endtime, url))
         data.append(item_info)
 
-    df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Starttime', 'Endtime'])
+    df = pd.DataFrame(data, columns=['Title', 'Category', 'Price', 'ShippingCost', 'Starttime', 'Endtime', 'Url'])
     df['Starttime'] = df['Starttime'].apply(pd.to_datetime).dt.normalize()
     df['Endtime'] = df['Endtime'].apply(pd.to_datetime).dt.normalize()
 
