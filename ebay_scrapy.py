@@ -34,6 +34,7 @@ def get_keywords(YOURAPPID):
         cat = item.categoryname.string.lower()
         cat_id = item.categoryid.string.lower()
         price = int(round(float(item.currentprice.string)))
+        shippingcost = item.shippingservicecost
         if shippingcost is None:
             shippingcost = 0.0
         else:

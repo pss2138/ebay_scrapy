@@ -35,11 +35,10 @@ def get_keywords(YOURAPPID):
         cat_id = item.categoryid.string.lower()
         price = int(round(float(item.currentprice.string)))
         shippingcost = item.shippingservicecost
-        if shippingcost is not None:
-            int(float(shippingcost.string))
-        ###Change it to int(float(shippingcost.string))
-        # Use .string for not-None tags to read the values, change the dtypes to integer,
-        # and use fillna at the dataframe part and make the 0 index to int
+        if shippingcost is None:
+            shippingcost = 0.0
+        else:
+            shippingcost = float(shippingcost.string.encode('utf-8'))
         starttime = item.starttime.string
         endtime = item.endtime.string
 
